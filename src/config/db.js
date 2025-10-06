@@ -5,6 +5,9 @@ export const pool = mysql.createPool({
   user: "root",
   password: "",
   database: "phone_store_db",
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0,
 });
 
 export const testConnection = async () => {

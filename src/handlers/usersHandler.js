@@ -116,3 +116,70 @@ export const addUserHandler = async (req, res) => {
     });
   }
 };
+
+export const updateUserHandler = async (req, res) => {
+  const { id } = req.params;
+  const {
+    fullname,
+    username,
+    email,
+    password,
+    role,
+    address,
+    phone_number,
+    age,
+  } = req.body;
+  try {
+    const [users] = await pool.query(
+      "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
+      [
+        fullname,
+        username,
+        email,
+        password,
+        role,
+        address,
+        phone_number,
+        age,
+        id,
+      ]
+    );
+
+    const [userUpdate] = await pool.query(
+      "SELECT id, fullname, username, email, role, phone_number, age FROM users WHERE id=?",
+      [id]
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "User update succses",
+      data: userUpdate[0],
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const deleteUserHandler = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { deleteUser } = await pool.query("DELETE FROM users WHERE id=?", [
+      id,
+    ]);
+
+    if (deleteUser.affectedRows === 0) {
+      res.status(404).json({
+        status: "Fail 404!",
+        message: "Note not found",
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "User deleted successfully",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
